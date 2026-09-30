@@ -332,6 +332,18 @@ def test_training_step_creation(pca_estimator):
 
 @patch('botocore.client.BaseClient._make_api_call', new=mock_boto_api_call)
 @patch.object(boto3.session.Session, 'region_name', 'us-east-1')
+def test_training_step_creation_with_estimator_tags(pca_estimator):
+    pca_estimator.tags = [{'key': 'cart', 'value': 'dataengineering'}]
+
+    step = TrainingStep('Training', estimator=pca_estimator, job_name='TrainingJob')
+
+    assert step.to_dict()['Parameters']['Tags'] == [
+        {'Key': 'cart', 'Value': 'dataengineering'}
+    ]
+
+
+@patch('botocore.client.BaseClient._make_api_call', new=mock_boto_api_call)
+@patch.object(boto3.session.Session, 'region_name', 'us-east-1')
 def test_training_step_creation_with_placeholders(pca_estimator):
     execution_input = ExecutionInput(schema={
         'Data': str,

@@ -142,6 +142,12 @@ class TrainingStep(Task):
         if 'S3Operations' in training_parameters:
             del training_parameters['S3Operations']
 
+        if training_parameters.get('Tags'):
+            training_parameters['Tags'] = [
+                {'Key': tag.get('Key', tag.get('key')), 'Value': tag.get('Value', tag.get('value'))}
+                for tag in training_parameters['Tags']
+            ]
+
         if tags:
             training_parameters['Tags'] = tags if isinstance(tags, Placeholder) else tags_dict_to_kv_list(tags)
 
